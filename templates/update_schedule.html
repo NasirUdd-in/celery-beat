@@ -1,0 +1,17 @@
+<!-- update_schedule.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Schedule</title>
+</head>
+<body>
+    <form id="schedule_update_form" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update Schedule</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Task</title>
+</head>
+<body>
+    <h1>Schedule Task</h1>
+    <form method="POST" action="{% url 'schedule' %}">
+        {% csrf_token %}
+        <label for="interval">Enter Interval (in seconds):</label>
+        <input type="number" id="interval" name="interval">
+        <button type="submit">Schedule Task</button>
+    </form>
+</body>
+</html>
