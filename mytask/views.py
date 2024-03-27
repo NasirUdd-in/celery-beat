@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from django_celery_beat.models import PeriodicTask, IntervalSchedule
+from django_celery_beat.models import PeriodicTask, IntervalSchedule,CrontabSchedule
 from .tasks import my_task
 
 
@@ -31,13 +31,31 @@ from django.shortcuts import render
 from django.utils import timezone
 def schedule_task(request):
     if request.method == 'POST':
-        interval_value = request.POST.get('interval')
+        hour_value = request.POST.get('hour')
+        min_value = request.POST.get('min')
 
-        interval, _ = IntervalSchedule.objects.get_or_create(
-            every=int(interval_value),
-            period=IntervalSchedule.SECONDS,
+        if hour_value is not None and min_value is not None:
+            try:
+                hour_value = int(hour_value)
+                min_value = int(min_value)
+            except ValueError:
+                # Handle the case where hour or min values are not valid integers
+                return HttpResponse("Invalid hour or minute value", status=400)
+        else:
+            # Handle the case where hour or min values are not provided in the request
+            return render(request, 'test.html')
+
+        # interval, _ = IntervalSchedule.objects.get_or_create(
+        #     every=int(interval_value),
+        #     period=IntervalSchedule.SECONDS,
+        # )
+        schedule, _ = CrontabSchedule.objects.get_or_create(
+                minute=min_value,
+                hour=hour_value,
+                day_of_week='*',
+                day_of_month='*',
+                month_of_year='*',
         )
-
         task_name = "my-schedule"
 
         # Check if a task with the same name already exists
@@ -45,13 +63,13 @@ def schedule_task(request):
 
         if existing_task:
             # If a task with the same name exists, update its interval
-            existing_task.interval = interval
+            existing_task.crontab = schedule
             existing_task.save()
             return render(request, 'test.html')
         else:
             # If no task with the same name exists, create a new task
             PeriodicTask.objects.create(
-                interval=interval,
+                crontab=schedule,
                 name=task_name,
                 task="mytask.tasks.my_task"
             )
