@@ -10,6 +10,7 @@
     <form method="POST" action="{% url 'schedule' %}">
         {% csrf_token %}
         <label for="interval">Enter Interval (in seconds):</label>
+        <input type="text" id="task" name="task">
         <input type="number" id="hour" name="hour">
         <input type="number" id="min" name="min">
         <button type="submit">Schedule Task</button>

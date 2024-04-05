@@ -33,11 +33,13 @@ def schedule_task(request):
     if request.method == 'POST':
         hour_value = request.POST.get('hour')
         min_value = request.POST.get('min')
+        task = request.POST.get('task')
 
-        if hour_value is not None and min_value is not None:
+        if hour_value is not None and min_value is not None and task is not None:
             try:
                 hour_value = int(hour_value)
                 min_value = int(min_value)
+                task = str(task)
             except ValueError:
                 # Handle the case where hour or min values are not valid integers
                 return HttpResponse("Invalid hour or minute value", status=400)
@@ -56,7 +58,7 @@ def schedule_task(request):
                 day_of_month='*',
                 month_of_year='*',
         )
-        task_name = "my-schedule"
+        task_name = task
 
         # Check if a task with the same name already exists
         existing_task = PeriodicTask.objects.filter(name=task_name).first()
@@ -71,7 +73,7 @@ def schedule_task(request):
             PeriodicTask.objects.create(
                 crontab=schedule,
                 name=task_name,
-                task="mytask.tasks.my_task"
+                task="mytask.tasks.my_task1"
             )
             return render(request, 'test.html')
     else:
